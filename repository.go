@@ -429,7 +429,7 @@ func readObjectFile(path string, sizeonly bool) (ot ObjectType, length int64, da
 	first_buffer_size := int64(1024)
 	b := make([]byte, first_buffer_size)
 	n, err := r.Read(b)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		return
 	}
 	spaceposition := int64(bytes.IndexByte(b, ' '))
@@ -479,6 +479,7 @@ func readObjectFile(path string, sizeonly bool) (ot ObjectType, length int64, da
 		b = append(b, remainingBuf...)
 	}
 	data = b[objstart : objstart+length]
+	err = nil
 	return
 }
 
