@@ -26,6 +26,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -200,10 +201,15 @@ func readCompressedDataFromFile(file *os.File, start int64, inflatedSize int64) 
 	var n, count int
 	for count < int(inflatedSize) {
 		n, err = rc.Read(zbuf[count:])
+		count += n
+
+		if err == io.EOF && count >= int(inflatedSize) {
+			break
+		}
+
 		if err != nil {
 			return nil, err
 		}
-		count += n
 	}
 	return zbuf, nil
 }
